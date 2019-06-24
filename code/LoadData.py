@@ -20,12 +20,21 @@ class LoadData(object):
         self.Train_data, self.Validation_data, self.Test_data = self.construct_data_new(loss_type, X_train, Y_train, self.create_y_logloss(Y_train), 
                                             X_validation, Y_validation, self.create_y_logloss(Y_validation), 
                                             X_test, Y_test, self.create_y_logloss(Y_test)) 
+                                            
         num_variable = self.truncate_features()
     
-    
+    def get_valid_index_list_from_onehotarray(self, X_):  
+        numsample, numfeature = X_.shape
+        Xlist = []
+        for i in range(numsample): 
+            i_nonzero = list(np.where(X_[i,:]==1)[0])
+            Xlist.append(i_nonzero)
+        return Xlist
+
     def construct_data_new(self, loss_type, X_train, Y_train, Y_for_logloss_train, X_validation, Y_validation, Y_for_logloss_validation, X_test, Y_test, Y_for_logloss_test): 
         
         X_, Y_ , Y_for_logloss= X_train, Y_train, Y_for_logloss_train
+        X_ = self.get_valid_index_list_from_onehotarray(X_)
         if loss_type == 'log_loss':
             Train_data = self.construct_dataset(X_, Y_for_logloss)
         else:
@@ -33,6 +42,7 @@ class LoadData(object):
         print("# of training:" , len(Y_))
 
         X_, Y_ , Y_for_logloss= X_validation, Y_validation, Y_for_logloss_validation
+        X_ =  self.get_valid_index_list_from_onehotarray(X_)
         if loss_type == 'log_loss':
             Validation_data = self.construct_dataset(X_, Y_for_logloss)
         else:
@@ -40,12 +50,13 @@ class LoadData(object):
         print("# of validation:", len(Y_))
 
         X_, Y_ , Y_for_logloss = X_test, Y_test, Y_for_logloss_test
+        X_ =  self.get_valid_index_list_from_onehotarray(X_)
         if loss_type == 'log_loss':
             Test_data = self.construct_dataset(X_, Y_for_logloss)
         else:
             Test_data = self.construct_dataset(X_, Y_)
         print("# of test:", len(Y_))
-
+        
         return Train_data,  Validation_data,  Test_data
    
     def create_y_logloss(self, Y_):
@@ -73,6 +84,7 @@ class LoadData(object):
         indexs = np.argsort(X_lens) #sort the samples from least features to most features, for frappe, each sample comes with the same size of features, so the order should be the same 
         Data_Dic['Y'] = [ Y_[i] for i in indexs]
         Data_Dic['X'] = [ X_[i] for i in indexs] 
+        #print(Data_Dic)
         return Data_Dic
     
     def truncate_features(self):
