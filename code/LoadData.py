@@ -1,11 +1,9 @@
 '''
 Utilities for Loading data.
-The input data file follows the same input for LibFM: http://www.libfm.org/libfm-1.42.manual.pdf
+ 
 
 @author: 
-Xiangnan He (xiangnanhe@gmail.com)
-Lizi Liao (liaolizi.llz@gmail.com)
-
+ 
 @references:
 '''
 import numpy as np
